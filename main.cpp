@@ -63,6 +63,10 @@ public:
         if (!empty())
             clear(); //if vocabulary was used,we clean it;
 
+        //Clear vocabularis list before load
+        if (vocabularies.size() != 0)
+            vocabularies.clear();
+
         std::string path = vocab_directory + file_name;
         this->current_open_file = path;
         std::printf("Loading vocabulary from %s\n", path.c_str());
@@ -121,10 +125,11 @@ public:
 
 
     void add(Word_pair &pair) {
-        this->push_back(pair);
+        push_back(pair);
     }
+
     void delete_pair(size_t index){
-        this->erase(this->begin() + index);
+        erase(this->begin() + index);
     }
 
 
@@ -200,16 +205,33 @@ void vocabulary_menu(Vocabulary &vocabulary) {
         std::cout << "Please, chose what you want to do: " << std::endl;
         std::cout << "1. Print all words" << std::endl;
         std::cout << "2. Add" << std::endl;
-        std::cout << "3. Save " << std::endl;
-        std::cout << "4. return to menu" << std::endl;
+        std::cout << "3. Remove" << std::endl;
+        std::cout << "4. Save " << std::endl;
+        std::cout << "5. Delete windows OS " << std::endl;
+        std::cout << "-----------------------------------------------------------------------------------" << std::endl;
+
+        //print all words
+        size_t index = -1;
+        for (Word_pair pair : vocabulary) {
+            index++;
+            std::cout <<"["<< index <<"]\t" << pair.word() << "\t\t\t\t - " << pair.translate() << std::endl;
+        }
+
+        std::cout << "-----------------------------------------------------------------------------------" << std::endl;
+
+
+        //Get chosen
+        std::cout << "Please, chose what you want to do: " << std::endl;
         std::cin >> choise;
 
+
+
+
+
+        //vocabulary menu
         switch (choise) {
             case 1: {
 
-                // for (Word_pair pair : vocabulary) {
-                //     std::cout << pair.word() << "\t\t\t\t - " << pair.translate() << std::endl;
-                // }
 
                 size_t index = -1;
                 for (Word_pair pair : vocabulary) {
@@ -217,31 +239,47 @@ void vocabulary_menu(Vocabulary &vocabulary) {
                     std::cout <<"["<< index <<"]\t" << pair.word() << "\t\t\t\t - " << pair.translate() << std::endl;
                 }
 
-                // size_t index = 0;
-                // for (Word_pair pair : vocabulary) {
-                //     std::cout
-                //     << "[" + index++ << "]"
-                //     << pair.word() << "\t\t - " << pair.translate()
-                //     << std::endl;
-                // }
 
                 pause();
                 break;
             }
 
             case 2: {
-                Word_pair pair ("aboba ->>>-", "PIDOOOOR");
+
+                std::string word;
+                std::string translate;
+
+                std::cout <<"Enter a word:";
+                std::cin >> word;
+                std::cout <<"Enter a translate:";
+                std::cin >> translate;
+
+                Word_pair pair (word, translate);
                 vocabulary.add(pair);
+                break;
             }
 
             case 3: {
-                std::cout << "\n\n\nSaving..." << std::endl;
-                vocabulary.save(vocabulary.current_open_file);
-                return;
+                int word_id;
+                std::cout << "Enter word ID: "  ;
+                std::cin >> word_id;
+
+                if (word_id >= 0 && word_id <= vocabulary.size()) {
+                    vocabulary.delete_pair(word_id);
+                }
+                else
+                    {std::cout<< "Invalid word ID" << std::endl;}
+
                 break;
             }
 
             case 4: {
+                std::cout << "\n\n\nSaving..." << std::endl;
+                vocabulary.save(vocabulary.current_open_file);
+                break;
+            }
+
+            case 5: {
                 std::cout << "\n\n\nProgram was finished, for exit type any key";
                 uint8_t exit;
                 std::cin >> exit;
@@ -326,7 +364,13 @@ int main() {
     }
 
 
-    //todo - доробити збереженняі додавання, додає каряво дублює файли скоріше за все проблема в шляху. додати пауезу до роботи з файлами
+    //todo - доробити збереження і додавання, додає каряво дублює файли скоріше за все проблема в шляху. додати пауезу до роботи з файлами
+
+    //ВІДКРИТТЯ СЛОВНИКА З ФАЙЛУ        90% доробити відкриття по посиланню на папку
+
+    //ДОДАВАННЯ НОВОГО СЛОВА            100%
+    //ЗБЕРЕЖЕННЯ СЛОВНИКА               20% створено клас
+    //ВИДАЛЕННЯ СЛОВА                   100%
 
 
 }
