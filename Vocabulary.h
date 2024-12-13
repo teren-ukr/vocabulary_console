@@ -16,12 +16,10 @@ public:
 
     //--------------------------------------VARIABLES
 
-    std::string vocab_directory;
+    //std::string vocab_directory;
     std::vector<std::string> vocabularies;
 
-    std::string saves_Directory = "..saves/";
-    std::string current_open_file = "";
-
+    std::string currentOpenVocabularyName;
 
     fs::path currentPath = fs::current_path();
     fs::path vocabulariesFolder = currentPath / "vocabularies";

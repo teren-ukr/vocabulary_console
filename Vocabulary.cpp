@@ -49,8 +49,15 @@ void Vocabulary::load(std::string file_name) {
     if (vocabularies.size() != 0)
         vocabularies.clear();
 
-    std::string path = vocab_directory + file_name;
-    this->current_open_file = path;
+    // std::string path = vocab_directory +
+    //std::string path = vocabulariesFolder.generic_string() + file_name;
+
+    std::string path = vocabulariesFolder.generic_string() +"\\" +file_name;
+
+    //saved paths data
+    //this->current_open_file = path;
+    this->currentOpenVocabularyName = file_name;
+
     std::printf("Loading vocabulary from %s\n", path.c_str());
     std::ifstream file(path);
 
@@ -78,34 +85,59 @@ void Vocabulary::load(std::string file_name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 ///Saved current vocabulary in save directory
+
 void Vocabulary::save(std::string file_name) {
+
     if (file_name.empty()) {
         std::cerr << "File name cannot be empty" << std::endl;
         return;
     }
 
     if (!empty()) {
-        //std::ofstream file(saves_Directory + file_name);
-        std::ofstream file("testFloppa.txt");
+        fs::path save = saveFolder / file_name;
 
-        if (!file.is_open()) {
-            std::cerr << "Could not open new created file " << file_name << std::endl;
-            return;
-        }
-
-
+        std::ofstream outFile1(save);
         for (const Word_pair& pair: *this) {
-            file << pair.word() << " " << pair.translate() << std::endl;
+            outFile1 << pair.word() << " - " << pair.translate() << std::endl;
         }
+        outFile1.close();
 
-        std::cout << "Vocabulary was saved to saves folder" << std::endl;
-        file.close();
+        std::cout << "Vocabulary saved successfully" << std::endl;
     }
     else {
-        std::cerr << "Vocabulary is empty" << std::endl;
-        return;
+        std::cout<<"Vocabulary is empty."<<std::endl;
     }
+
 }
+
+// void Vocabulary::save(std::string file_name) {
+//     if (file_name.empty()) {
+//         std::cerr << "File name cannot be empty" << std::endl;
+//         return;
+//     }
+//
+//     if (!empty()) {
+//         //std::ofstream file(saves_Directory + file_name);
+//         std::ofstream file(saveFolder.generic_string() + "/" + file_name);
+//
+//         if (!file.is_open()) {
+//             std::cerr << "Could not open new created file " << file_name << std::endl;
+//             return;
+//         }
+//
+//
+//         for (const Word_pair& pair: *this) {
+//             file << pair.word() << " " << pair.translate() << std::endl;
+//         }
+//
+//         std::cout << "Vocabulary was saved to saves folder" << std::endl;
+//         file.close();
+//     }
+//     else {
+//         std::cerr << "Vocabulary is empty" << std::endl;
+//         return;
+//     }
+// }
 
 //----------------------------------------------------------------------------------------------------------------------
 ///Added new word pair in current vocabulary
@@ -125,7 +157,7 @@ void Vocabulary::initialize_vocabs_from_directory() {
 
 
     try {
-        for (const auto& entry : fs::directory_iterator(vocab_directory)) {
+        for (const auto& entry : fs::directory_iterator(vocabulariesFolder)) {
             // std::cout << entry.path().filename() << std::endl;
             vocabularies.push_back(entry.path().filename().string());
         }
@@ -161,11 +193,11 @@ void Vocabulary::chose_vocabulary() {
 //----------------------------------------------------------------------------------------------------------------------
 /// Allow to get path to current vocabulary's directory
 std::string Vocabulary::get_vocab_directory() const {
-    return vocab_directory;
+    return vocabulariesFolder.generic_string();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 /// Allow to set directory from which vocabularies will be loaded
 void Vocabulary::set_vocab_directory(const std::string &vocab_directory) {
-    this->vocab_directory = vocab_directory;
+    this->vocabulariesFolder.generic_string() = vocab_directory;
 }

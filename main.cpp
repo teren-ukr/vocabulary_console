@@ -5,13 +5,11 @@
 
 
 //----------------------------------------------------------------------------------------------------------------------
-
-
 void clear_console() {
     if (system("clear")) system( "cls" );
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------
 void vocabulary_menu(Vocabulary &vocabulary) {
 
     clear_console();
@@ -41,19 +39,15 @@ void vocabulary_menu(Vocabulary &vocabulary) {
         std::cin >> choise;
 
 
-
-
         //vocabulary menu
         switch (choise) {
             case 1: {
-
 
                 size_t index = -1;
                 for (const Word_pair& pair : vocabulary) {
                     index++;
                     std::cout <<"["<< index <<"]\t" << pair.word() << "\t\t\t\t - " << pair.translate() << std::endl;
                 }
-
 
                 system("pause");
                 break;
@@ -90,14 +84,13 @@ void vocabulary_menu(Vocabulary &vocabulary) {
 
             case 4: {
                 std::cout << "\n\n\nSaving..." << std::endl;
-                vocabulary.save(vocabulary.current_open_file);
+                vocabulary.save(vocabulary.currentOpenVocabularyName);
                 system("pause");
                 break;
             }
 
             case 5: {
                 return;
-                break;
             }
 
         }
@@ -110,9 +103,10 @@ void vocabulary_menu(Vocabulary &vocabulary) {
 //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- MAIN
 int main() {
     system("chcp 65001"); // Установити кодову сторінку UTF-8
+    clear_console();
+
 
     Vocabulary vocabulary;
-
 
 
     while (true) {
@@ -120,8 +114,7 @@ int main() {
         std::cout << "Please, chose what you want to do: " << std::endl;
         std::cout << "0. Create work space(prefer to use)" << std::endl;
         std::cout << "1. load vocabulary" << std::endl;
-        std::cout << "2. save vocabulary" << std::endl;
-        std::cout << "3. chose directory" << std::endl;
+
         std::cout << "4. exit" << std::endl;
         std::cin >> choise;
 
@@ -131,6 +124,7 @@ int main() {
             case 0: {
                 vocabulary.createWorkSpace();
                 system("pause");
+                break;
             }
 
             case 1: {
@@ -158,20 +152,6 @@ int main() {
             }
 
 
-            case 2: {
-                std::cout << "this function is not available" << std::endl;
-                break;
-            }
-
-            case 3: {
-                std::cout << "write your directory path" << std::endl;
-                noskipws(std::cin); //disabled spase skip
-                std::string path;
-                std::cin >> path;
-                vocabulary.set_vocab_directory(path);
-                break;
-            }
-
             case 4: {
                 std::cout << "\n\n\nProgram was finished, for exit type any key";
                 uint8_t exit;
@@ -186,10 +166,10 @@ int main() {
 
     //todo - доробити збереження і додавання, додає каряво дублює файли скоріше за все проблема в шляху. додати пауезу до роботи з файлами
 
-    //ВІДКРИТТЯ СЛОВНИКА З ФАЙЛУ        90% доробити відкриття по посиланню на папку
-    //СТВОРЕННЯ ІНІЦІАЛІЗАЦЦІЇ РОБОЧОГО ПРОСТОРУ. ЗАХИСТ ВІД ДУРАКІВ ЯКВ НЕ ЗМОЖУТЬ ВВЕСТИ ШЛЯХ 80%
+    //ВІДКРИТТЯ СЛОВНИКА З ФАЙЛУ        100%
+    //ЗАХИСТ "ВІД ДУРАКА".              100%
     //ДОДАВАННЯ НОВОГО СЛОВА            100%
-    //ЗБЕРЕЖЕННЯ СЛОВНИКА               20% створено клас
+    //ЗБЕРЕЖЕННЯ СЛОВНИКА               100%
     //ВИДАЛЕННЯ СЛОВА                   100%
 
 
