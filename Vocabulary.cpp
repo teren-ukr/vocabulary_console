@@ -110,34 +110,24 @@ void Vocabulary::save(std::string file_name) {
 
 }
 
-// void Vocabulary::save(std::string file_name) {
-//     if (file_name.empty()) {
-//         std::cerr << "File name cannot be empty" << std::endl;
-//         return;
-//     }
-//
-//     if (!empty()) {
-//         //std::ofstream file(saves_Directory + file_name);
-//         std::ofstream file(saveFolder.generic_string() + "/" + file_name);
-//
-//         if (!file.is_open()) {
-//             std::cerr << "Could not open new created file " << file_name << std::endl;
-//             return;
-//         }
-//
-//
-//         for (const Word_pair& pair: *this) {
-//             file << pair.word() << " " << pair.translate() << std::endl;
-//         }
-//
-//         std::cout << "Vocabulary was saved to saves folder" << std::endl;
-//         file.close();
-//     }
-//     else {
-//         std::cerr << "Vocabulary is empty" << std::endl;
-//         return;
-//     }
-// }
+
+//----------------------------------------------------------------------------------------------------------------------
+///Create new vocabulary in vocabulary directory
+void Vocabulary::createVocabulary(std::string name) {
+    if (name.empty()) {
+        std::cerr << "File name cannot be empty" << std::endl;
+        return;
+    }
+
+
+    fs::path save = vocabulariesFolder / name;
+
+    std::ofstream outFile1(save);
+    outFile1.close();
+
+    std::cout << "Vocabulary created successfully" << std::endl;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 ///Added new word pair in current vocabulary
@@ -170,19 +160,66 @@ void Vocabulary::initialize_vocabs_from_directory() {
 /// Allow to select vocabulary from list of available ones that was loaded before
 void Vocabulary::chose_vocabulary() {
 
+    auto lengthUTF8 = [](const std::string &s) {
+        int count = 0;
+        for (size_t i = 0; i < s.size(); ++i) {
+            // Якщо це не байт продовження (0x80 - 0xBF), значить, це новий символ
+            if ((s[i] & 0xC0) != 0x80) {
+                ++count;
+            }
+        }
+        return count;
+    };
+    auto nms =[lengthUTF8](const std::string &name, const uint8_t bnum) {
+        return bnum - lengthUTF8(name); ;
+    };
+    auto nmi =[](const int &id, const uint8_t &bnum) {
+        return bnum - std::to_string(id).length();
+    };
+    auto prs =[](const int &num, const char &symbol ) {
+        for (int i = 0; i < num; ++i) {
+            std::cout << symbol;
+        }
+        return "";
+    };
+
+
+
     initialize_vocabs_from_directory();
     if (vocabularies.empty()) {
         std::cout<< "Vocabulary list is empty" << std::endl;
         return;
     }
 
-    std::cout<< "Chose vocabulary from list: " << std::endl;
+    std::cout << "╔═════════════════════════════════════════════════════════════════════════════════════╗" << std::endl;
+    std::cout << "║ Chose vocabulary from list:                                                         ║" << std::endl;
+    std::cout << "╬════╬════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+    std::cout << "║ No ╬ Vocabulary Name                                                                ║" << std::endl;
+    std::cout << "╬════╬════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+
+
     for (int i = 0; i < vocabularies.size(); i++) {
-        std::cout << i + 1 << " - " << vocabularies[i] << std::endl;
+        // Виведення індексу та назви, обмеженої max_length символами
+        // std::string truncated_vocab = vocabularies[i];
+        // printf("║ %-3d ╬ %-*s ║\n", i, 80, truncated_vocab.c_str());
+
+        int ad_to_id = nmi(i,3);
+        int ad_to_vocub = nms(vocabularies[i],79);
+
+        //printf("║ %-*d ╬ %-*s ║\n", nmi(i), i, nms(vocabularies[i]), vocabularies[i].c_str());
+        //std::cout << vocabularies[i]<<lengthUTF8(vocabularies[i]) << std::endl;
+
+        std::cout << "║ "<< i << prs(ad_to_id,' ') <<"╬ " <<vocabularies[i] <<prs(ad_to_vocub,' ') <<"║"<<std::endl;
     }
 
+    std::cout << "╬════╬════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+    std::cout << "╚═════════════════════════════════════════════════════════════════════════════════════╝" << std::endl;
+
+
+
+
+    std::cout << "► Enter your choice: ";  // Створка для введення дії
     int choice;
-    std::cout<<"Chosed :";
     std::cin >> choice;
 
     if (choice > 0 && choice - 1 <= vocabularies.size())

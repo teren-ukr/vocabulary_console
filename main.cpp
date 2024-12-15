@@ -11,27 +11,87 @@ void clear_console() {
 
 //----------------------------------------------------------------------------------------------------------------------
 void vocabulary_menu(Vocabulary &vocabulary) {
+    auto lengthUTF8 = [](const std::string &s) {
+        int count = 0;
+        for (size_t i = 0; i < s.size(); ++i) {
+            // Якщо це не байт продовження (0x80 - 0xBF), значить, це новий символ
+            if ((s[i] & 0xC0) != 0x80) {
+                ++count;
+            }
+        }
+        return count;
+    };
+    auto nms =[lengthUTF8](const std::string &name, const uint8_t bnum) {
+        return bnum - lengthUTF8(name); ;
+    };
+    auto nmi =[](const int &id, const uint8_t &bnum) {
+        return bnum - std::to_string(id).length();
+    };
+    auto prs =[](const int &num, const char &symbol ) {
+        for (int i = 0; i < num; ++i) {
+            std::cout << symbol;
+        }
+        return "";
+    };
+
+    auto grs =[](const int &num, const char &symbol) {
+        std::string s = "";
+        for (int i = 0; i < num; ++i) {
+            s.append(" ");
+        }
+        return s;
+    };
+    auto mdls =[lengthUTF8, grs](const std::string &str, const uint8_t &num) {
+        uint8_t everangeNum = (num - lengthUTF8(str))/2;
+        return grs(everangeNum, ' ') + str + grs(everangeNum, ' ');
+    };
 
     clear_console();
 
     while (true) {
         int choise;
-        std::cout << "Please, chose what you want to do: " << std::endl;
-        std::cout << "1. Print all words" << std::endl;
-        std::cout << "2. Add" << std::endl;
-        std::cout << "3. Remove" << std::endl;
-        std::cout << "4. Save " << std::endl;
-        std::cout << "5. Return to main menu " << std::endl;
-        std::cout << "-----------------------------------------------------------------------------------" << std::endl;
+
+        std::cout << "╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗" << std::endl;
+        std::cout << "║"            <<mdls(vocabulary.currentOpenVocabularyName,113)                 <<"║" << std::endl;
+        std::cout << "╬═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+        std::cout << "║ Please, choose what you want to do:                                                                             ║" << std::endl;
+        std::cout << "╬═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+        std::cout << "║ 1. Print all words                                                                                              ║" << std::endl;
+        std::cout << "║ 2. Add                                                                                                          ║" << std::endl;
+        std::cout << "║ 3. Remove                                                                                                       ║" << std::endl;
+        std::cout << "║ 4. Save                                                                                                         ║" << std::endl;
+        std::cout << "║ 5. Return to main menu                                                                                          ║" << std::endl;
+        std::cout << "╬═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+        std::cout << "╬═════╬═════════════════════════════════════════════════════╬═════════════════════════════════════════════════════╬" << std::endl;
+        std::cout << "║ id   Word                                                  Translate                                            ║" << std::endl;
+        std::cout << "╬═════╬═════════════════════════════════════════════════════╬═════════════════════════════════════════════════════╬" << std::endl;
+
+
+        const uint8_t id_l = 4;
+        const uint8_t word_l = 52;
+        const uint8_t translate_l = 52;
 
         //print all words
         size_t index = -1;
         for (const Word_pair& pair : vocabulary) {
             index++;
-            std::cout <<"["<< index <<"]\t" << pair.word() << "\t\t\t\t - " << pair.translate() << std::endl;
+            //std::cout <<"["<< index <<"]\t" << pair.word() << "\t\t\t\t - " << pair.translate() << std::endl;
+
+            const uint8_t add_index = nmi(index, id_l);
+            const uint8_t add_word = nms(pair.word(),word_l);
+            const uint8_t add_translate = nms(pair.translate(),translate_l);
+
+            std::cout
+            <<"╬ "<<index << prs(add_index,' ')
+            <<"╬ "<<pair.word() <<prs(add_word,' ')
+            <<"╬ "<<pair.translate() <<prs(add_translate,' ')
+            <<"║"
+            <<std::endl;
+
         }
 
-        std::cout << "-----------------------------------------------------------------------------------" << std::endl;
+        std::cout << "╬═════╬═══════════════════════════════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+        std::cout << "╚═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝" << std::endl;
 
 
         //Get chosen
@@ -111,11 +171,27 @@ int main() {
 
     while (true) {
         int choise;
-        std::cout << "Please, chose what you want to do: " << std::endl;
-        std::cout << "0. Create work space(prefer to use)" << std::endl;
-        std::cout << "1. load vocabulary" << std::endl;
-
-        std::cout << "4. exit" << std::endl;
+        std::cout << "╔═════════════════════════════════════════════════════════════════════════════════════╗" << std::endl;
+        std::cout << "║██╗    ██╗ ██████╗  ██████╗ █████╗ ██████╗ ██╗   ██╗██╗      █████╗ ██████╗ ██╗   ██╗║" << std::endl;
+        std::cout << "║██║    ██║██╔═══██╗██╔════╝██╔══██╗██╔══██╗██║   ██║██║     ██╔══██╗██╔══██╗╚██╗ ██╔╝║" << std::endl;
+        std::cout << "║╚██╗  ██╔╝██║   ██║██║     ███████║██████╔╝██║   ██║██║     ███████║██████╔╝ ╚████╔╝ ║" << std::endl;
+        std::cout << "║ ╚██╗██╔╝ ██║   ██║██║     ██╔══██║██╔══██╗██║   ██║██║     ██╔══██║██╔══██╗  ╚██╔╝  ║" << std::endl;
+        std::cout << "║  ╚███╔╝  ╚██████╔╝╚██████╗██║  ██║██████╔╝╚██████╔╝███████╗██║  ██║██║  ██║   ██║   ║" << std::endl;
+        std::cout << "║   ╚═╝     ╚═════╝  ╚═════╝╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ║" << std::endl;
+        std::cout << "╬═════════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+        std::cout << "║                        Created by https://github.com/teren-ukr                      ║" << std::endl;
+        std::cout << "╚═════════════════════════════════════════════════════════════════════════════════════╝" << std::endl;
+        std::cout << "***If it your first run, use 0 to create work space***" << std::endl;
+        std::cout <<  std::endl;
+        std::cout << "╔═════════════════════════════════════════════════════════════════════════════════════╗" << std::endl;
+        std::cout << "║ Please, choose what you want to do:                                                 ║" << std::endl;
+        std::cout << "╬═════════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+        std::cout << "║ 0  Create work space (prefer to use)                                                ║" << std::endl;
+        std::cout << "║ 1. Load vocabulary                                                                  ║" << std::endl;
+        std::cout << "║ 2. Add new vocabulary                                                               ║" << std::endl;
+        std::cout << "║ 4. Exit                                                                             ║" << std::endl;
+        std::cout << "╚═════════════════════════════════════════════════════════════════════════════════════╝" << std::endl;
+        std::cout << "► Enter your choice: ";  // Створка для введення дії
         std::cin >> choise;
 
         switch (choise) {
@@ -128,27 +204,23 @@ int main() {
             }
 
             case 1: {
-                std::cout << "Do you would prefer use basic vocabulary or load your own?" << std::endl;
-                std::cout << "1. Basic vocabulary" << std::endl;
-                std::cout << "2. Load your own" << std::endl;
-
-                int ch;
-                std::cin >> ch;
-                if (ch == 1) {
-                    vocabulary.set_vocab_directory("../vocabularies/");
-                } else {
-                    std::cout << "write your directory path" << std::endl;
-                    noskipws(std::cin); //disabled spase skip
-                    std::string path;
-                    std::cin >> path;
-                    vocabulary.set_vocab_directory(path);
-                    break;
-                }
-
 
                 vocabulary.chose_vocabulary();
                 vocabulary_menu(vocabulary);
                 break;
+            }
+
+            case 2: {
+                std::string name;
+                std::cout << "Enter vocabulary name: ";
+                std::cin >> name;
+
+                vocabulary.createVocabulary(name);
+                std::cout << "Created successful. You can load it. " << std::endl;
+
+                system("pause");
+                break;
+
             }
 
 
@@ -164,13 +236,14 @@ int main() {
     }
 
 
-    //todo - доробити збереження і додавання, додає каряво дублює файли скоріше за все проблема в шляху. додати пауезу до роботи з файлами
+    //todo - Зробити збереження одразу на папку словників а не сейв, сейв перероробити на сейв ес.
 
     //ВІДКРИТТЯ СЛОВНИКА З ФАЙЛУ        100%
     //ЗАХИСТ "ВІД ДУРАКА".              100%
     //ДОДАВАННЯ НОВОГО СЛОВА            100%
     //ЗБЕРЕЖЕННЯ СЛОВНИКА               100%
     //ВИДАЛЕННЯ СЛОВА                   100%
+
 
 
 }

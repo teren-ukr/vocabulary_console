@@ -7,4 +7,5 @@ add_executable(untitled main.cpp
         Word_pair.cpp
         Word_pair.h
         Vocabulary.cpp
-        Vocabulary.h)
+        Vocabulary.h
+        functions.h)

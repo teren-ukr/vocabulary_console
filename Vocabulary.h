@@ -5,8 +5,11 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <iomanip>
 #include <iostream>
 #include <fstream>
+
+#include "functions.h"
 
 #include "Word_pair.h"
 namespace fs = std::filesystem;
@@ -41,6 +44,7 @@ public:
 
     void load(std::string file_name);
     void save(std::string file_name);
+    void createVocabulary(std::string name);
 
 
     void add(Word_pair &pair);
