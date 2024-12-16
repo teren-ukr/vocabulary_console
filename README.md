@@ -23,13 +23,14 @@ When you are open it, you will see main menu.
 In a nutshell about it
 point one can alows to load dictionary.
 ![Знімок екрана 2024-12-17 001943](https://github.com/user-attachments/assets/e804b683-c814-4b38-a464-0922eea2226c)
-in this 
 
 point two alows to create new dicttionary in your filesystem
 point three and four opened save folders
 point five alows change console coloscheme. Unfochinetly, it use only in this session 
 
 # About dictionsry menu
+
+![Знімок екрана 2024-12-17 002947](https://github.com/user-attachments/assets/b41661af-15ea-471f-9e81-941578b7b6c1)
 
 
 
