@@ -22,11 +22,16 @@ void Vocabulary::createWorkSpace() const {
 
 
         std::ofstream outFile1(testVocabulary);
-        outFile1 <<"ThisIsYourTestVocabulary - ЦеТвійТестовийСловник";
+        outFile1 <<"розчарований  -  disappointed\n";
+        outFile1 <<"впевнений  -  confident\n";
+        outFile1 <<"захоплюючий  -  exciting\n";
+        outFile1 <<"переконатися  -  make sure\n";
+        outFile1 <<"взаємодія  -  interaction\n";
+
         outFile1.close();
 
         std::ofstream outFile2(testSave);
-        outFile2 <<"ThisIsYourTestSave - ЦеТвійТестовийФайлЗбереження";
+        outFile2 <<"ThisIsYourTestSave - ЦеТвійТестовийФайлЗбереження\n";
         outFile2.close();
 
         std::cout << "Files created successfully" << std::endl;
@@ -94,7 +99,7 @@ void Vocabulary::save(std::string file_name) {
     }
 
     if (!empty()) {
-        fs::path save = vocabulariesFolder / file_name;
+        const fs::path save = vocabulariesFolder / file_name;
 
         std::ofstream outFile1(save);
         for (const Word_pair& pair: *this) {
@@ -113,14 +118,14 @@ void Vocabulary::save(std::string file_name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 ///Saved current vocabulary in save directory
-void Vocabulary::saveAs(fs::path &path, const std::string &file_name) {
+void Vocabulary::saveAs(const fs::path &path, const std::string &file_name) {
     if (file_name.empty()) {
         std::cerr << "File name cannot be empty" << std::endl;
         return;
     }
 
     if (!empty()) {
-        fs::path save = path / file_name;
+        const fs::path save = path / file_name;
 
         std::ofstream outFile1(save);
         for (const Word_pair& pair: *this) {
@@ -138,14 +143,18 @@ void Vocabulary::saveAs(fs::path &path, const std::string &file_name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 ///Create new vocabulary in vocabulary directory
-void Vocabulary::createVocabulary(std::string name) const {
+void Vocabulary::createVocabulary(const std::string &name) const {
     if (name.empty()) {
-        std::cerr << "File name cannot be empty" << std::endl;
+        //std::cerr << "File name cannot be empty" << std::endl;
+        std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
+        std::cout << "║                   Issue: File name cannot be empty                     ║" << std::endl;
+        std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
+
         return;
     }
 
 
-    fs::path save = vocabulariesFolder / name;
+    const fs::path save = vocabulariesFolder / name;
 
     std::ofstream outFile1(save);
     outFile1.close();
@@ -164,6 +173,22 @@ void Vocabulary::add(Word_pair &pair) {
 ///Deleted word pair from vocabulary by id
 void Vocabulary::delete_pair(size_t index) {
     erase(this->begin() + index);
+}
+
+void Vocabulary::openFolder(const std::string &path) {
+    std::cout << path << std::endl;
+    auto utf8ToUtf16 = [](const std::string& utf8) -> std::wstring {
+        int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, NULL, 0);
+        if (sizeNeeded == 0) return L"";
+
+        std::wstring utf16(sizeNeeded, 0);
+        MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, &utf16[0], sizeNeeded);
+        return utf16;
+    };
+
+    std::wstring wpath = utf8ToUtf16(path); // Конвертація шляху в UTF-16
+    ShellExecuteW(NULL, L"open", wpath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    //ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -212,7 +237,11 @@ void Vocabulary::chose_vocabulary() {
 
     initialize_vocabs_from_directory();
     if (vocabularies.empty()) {
-        std::cout<< "Vocabulary list is empty" << std::endl;
+        //std::cout<< "Vocabulary list is empty" << std::endl;
+        std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
+        std::cout << "║                    Issue: Vocabulary list is empty                     ║" << std::endl;
+        std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
+
         return;
     }
 
@@ -221,20 +250,12 @@ void Vocabulary::chose_vocabulary() {
     std::cout << "╬════╬════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
     std::cout << "║ No ╬ Vocabulary Name                                                                ║" << std::endl;
     std::cout << "╬════╬════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
-    std::cout << "╬    ╬                                                                                ╬" << std::endl;
-
-
+    std::cout << "║    ║                                                                                ║" << std::endl;
 
     for (int i = 0; i < vocabularies.size(); i++) {
-        // Виведення індексу та назви, обмеженої max_length символами
-        // std::string truncated_vocab = vocabularies[i];
-        // printf("║ %-3d ╬ %-*s ║\n", i, 80, truncated_vocab.c_str());
 
         int ad_to_id = nmi(i,3);
         int ad_to_vocub = nms(vocabularies[i],79);
-
-        //printf("║ %-*d ╬ %-*s ║\n", nmi(i), i, nms(vocabularies[i]), vocabularies[i].c_str());
-        //std::cout << vocabularies[i]<<lengthUTF8(vocabularies[i]) << std::endl;
 
         std::cout << "║ "<< i+1 << prs(ad_to_id,' ') <<"╬ " <<vocabularies[i] <<prs(ad_to_vocub,' ') <<"║"<<std::endl;
     }

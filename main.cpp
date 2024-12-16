@@ -57,9 +57,8 @@ void vocabulary_menu(Vocabulary &vocabulary) {
 
         std::cout << "╔═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗" << std::endl;
         std::cout << "╬═════╬═════════════════════════════════════════════════════╬═════════════════════════════════════════════════════╬" << std::endl;
-        std::cout << "║ id   Word                                                  Translate                                            ║" << std::endl;
+        std::cout << "║ id  ╬ Word                                                ╬ Translate                                           ║" << std::endl;
         std::cout << "╬═════╬═════════════════════════════════════════════════════╬═════════════════════════════════════════════════════╬" << std::endl;
-        std::cout << "╬─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╬" << std::endl;
 
 
         const uint8_t id_l = 4;
@@ -127,10 +126,20 @@ void vocabulary_menu(Vocabulary &vocabulary) {
                 std::string word;
                 std::string translate;
 
-                std::cout <<"Enter a word:";
-                std::cin >> word;
-                std::cout <<"Enter a translate:";
-                std::cin >> translate;
+                std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
+                std::cout << "║                              Add new word.                             ║" << std::endl;
+                std::cout << "║                        Write word ant translate.                       ║" << std::endl;
+                std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
+
+
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout <<"► Enter a word:";
+                //std::cin >> word;
+                std::getline(std::cin, word);
+
+                std::cout <<"► Enter a translate:";
+                //std::cin >> translate;
+                std::getline(std::cin, translate);
 
                 Word_pair pair (word, translate);
                 vocabulary.add(pair);
@@ -138,6 +147,12 @@ void vocabulary_menu(Vocabulary &vocabulary) {
             }
 
             case 3: {
+
+                std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
+                std::cout << "║                               Remove word.                             ║" << std::endl;
+                std::cout << "║                  Enter ID of word that you want to remove              ║" << std::endl;
+                std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
+
                 int word_id;
                 std::cout << "Enter word ID: "  ;
                 std::cin >> word_id;
@@ -145,8 +160,12 @@ void vocabulary_menu(Vocabulary &vocabulary) {
                 if (word_id >= 0 && word_id <= vocabulary.size()) {
                     vocabulary.delete_pair(word_id);
                 }
-                else
-                    {std::cout<< "Invalid word ID" << std::endl;}
+                else {
+                    //std::cout<< "Invalid word ID" << std::endl;
+                    std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
+                    std::cout << "║                          Issue: Invalid word I                         ║" << std::endl;
+                    std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
+                }
 
                 break;
             }
@@ -169,7 +188,8 @@ void vocabulary_menu(Vocabulary &vocabulary) {
                 std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
                 std::cout << "► Enter file name: ";
                 std::string filename;
-                std::cin >> filename;
+                //std::cin >> filename;
+                std::getline(std::cin, filename);
 
                 vocabulary.saveAs(vocabulary.saveFolder,filename);
 
@@ -204,14 +224,13 @@ void vocabulary_menu(Vocabulary &vocabulary) {
 
 }
 
-void checkWorkFolders() {
+
+bool checkWorkFolders(Vocabulary &vocabulary) {
     fs::path currentPath = fs::current_path();
     fs::path savefolder = currentPath / "saves";
     fs::path vocabularyfolder = currentPath / "vocabularies";
 
-
-    if (!fs::exists(savefolder) or fs::exists(vocabularyfolder)) {
-        std::cout << savefolder << " the work folders was not created" << std::endl;
+    if (!fs::exists(savefolder) && !fs::exists(vocabularyfolder)) {
         std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
         std::cout << "║ the work folders was not created. Create it?                           ║" << std::endl;
         std::cout << "╬════════════════════════════════════════════════════════════════════════╬" << std::endl;
@@ -219,19 +238,34 @@ void checkWorkFolders() {
         std::cout << "║ 2. No                                                                  ║" << std::endl;
         std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
         std::cout << "► Enter your choice: ";
+        int choice;
+        std::cin >> choice;
 
+        if (choice == 1) {
+            vocabulary.createWorkSpace();
+            return true;
+        }
+        return false;
     }
+    return true;
+}
 
+
+void setColor(int textColor, int bgColor) {
+    // Функція для встановлення кольорів
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (bgColor << 4) | textColor);
 }
 
 //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+- MAIN
 int main() {
     system("chcp 65001"); // Установити кодову сторінку UTF-8
+
+    //14
+
+    setColor(14,0);
     clear_console();
 
-
     Vocabulary vocabulary;
-
 
     while (true) {
         int choise;
@@ -250,78 +284,99 @@ int main() {
         std::cout << "╔═════════════════════════════════════════════════════════════════════════════════════╗" << std::endl;
         std::cout << "║ Please, choose what you want to do:                                                 ║" << std::endl;
         std::cout << "╬═════════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
-        std::cout << "║ 0  Create work space (prefer to use)                                                ║" << std::endl;
+        //std::cout << "║ 0.  Create work space (prefer to use)                                                ║" << std::endl;
         std::cout << "║ 1. Load vocabulary                                                                  ║" << std::endl;
         std::cout << "║ 2. Add new vocabulary                                                               ║" << std::endl;
         std::cout << "║ 3. Open vocabularies folder                                                         ║" << std::endl;
         std::cout << "║ 4. Open saves folder                                                                ║" << std::endl;
-        std::cout << "║ 5. Exit                                                                             ║" << std::endl;
+        std::cout << "║ 5. Load another colorscheme                                                         ║" << std::endl;
+        std::cout << "║ 6. Exit                                                                             ║" << std::endl;
         std::cout << "╚═════════════════════════════════════════════════════════════════════════════════════╝" << std::endl;
         std::cout << "► Enter your choice: ";  // Створка для введення дії
         std::cin >> choise;
 
 
-        switch (choise) {
+        if (checkWorkFolders(vocabulary))
+        {
+            switch (choise) {
+                case 0: {
+                    vocabulary.createWorkSpace();
+                    system("pause");
+                    break;
+                }
+
+                case 1: {
+                    vocabulary.chose_vocabulary();
+                    vocabulary_menu(vocabulary);
+                    break;
+                }
+
+                case 2: {
+                    std::string name;
+                    //std::cout << "Enter vocabulary name: ";
+                    std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
+                    std::cout << "║                         Enter vocabulary name                          ║" << std::endl;
+                    std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
+                    std::cout << "► Enter your choice: ";
+
+                    //std::cin >> name;
+                    std::getline(std::cin, name);
+
+                    vocabulary.createVocabulary(name);
+                    std::cout << "Created successful. You can load it. " << std::endl;
+
+                    system("pause");
+                    break;
+                }
+
+                case 3: {
+                    vocabulary.openFolder(vocabulary.vocabulariesFolder.generic_string());
+                    std::cout << "Open successful." << std::endl;
+                    system("pause");
+                    break;
+                }
+
+                case 4: {
+                    vocabulary.openFolder(vocabulary.saveFolder.generic_string());
+                    std::cout << "Open successful." << std::endl;
+                    system("pause");
+                    break;
+                }
+
+                case 5: {
+
+                    std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
+                    std::cout << "║                        Load Another Color Scheme                       ║" << std::endl;
+                    std::cout << "║                          Enter Number of Color                         ║" << std::endl;
+                    std::cout << "╠════════════════════════════════════╦═══════════════════════════════════╣" << std::endl;
+                    std::cout << "║                1 - Синій           ║   6 - Жовтий                      ║" << std::endl;
+                    std::cout << "║                2 - Зелений         ║   7 - Білий                       ║" << std::endl;
+                    std::cout << "║                3 - Блакитний       ║   8 - Сірий                       ║" << std::endl;
+                    std::cout << "║                4 - Червоний        ║   9 - Світло-сині                 ║" << std::endl;
+                    std::cout << "║                5 - Фіолетовий      ║   0 - Чорний                      ║" << std::endl;
+                    std::cout << "╚════════════════════════════════════╩═══════════════════════════════════╝" << std::endl;
+                    std::cout << "► Enter your choice: ";
+                    int choice;
+                    std::cin >> choice;
+                    setColor(choice,0);
+                    break;
 
 
-            case 0: {
-                vocabulary.createWorkSpace();
-                system("pause");
-                break;
+
+                }
+
+                case 6: {
+                    //std::cout << "\n\n\nProgram was finished, for exit type any key";
+                    std::cout << "╔════════════════════════════════════════════════════════════════════════╗" << std::endl;
+                    std::cout << "║              Program was finished, for exit type any key               ║" << std::endl;
+                    std::cout << "╚════════════════════════════════════════════════════════════════════════╝" << std::endl;
+                    system("pause");
+                    return 0;
+                }
             }
-
-            case 1: {
-
-                vocabulary.chose_vocabulary();
-                vocabulary_menu(vocabulary);
-                break;
-            }
-
-            case 2: {
-                std::string name;
-                std::cout << "Enter vocabulary name: ";
-                std::cin >> name;
-
-                vocabulary.createVocabulary(name);
-                std::cout << "Created successful. You can load it. " << std::endl;
-
-                system("pause");
-                break;
-
-            }
-
-            case 3: {
-                vocabulary.openFolder(vocabulary.vocabulariesFolder.generic_string());
-                std::cout << "Open successful." << std::endl;
-                system("pause");
-            }
-
-            case 4: {
-                vocabulary.openFolder(vocabulary.saveFolder.generic_string());
-                std::cout << "Open successful." << std::endl;
-                system("pause");
-            }
-
-            case 5: {
-                std::cout << "\n\n\nProgram was finished, for exit type any key";
-                uint8_t exit;
-                std::cin >> exit;
-                break;
-            }
-
         }
-       clear_console();
+
+        clear_console();
     }
-
-
-    //todo - Зробити збереження одразу на папку словників а не сейв, сейв перероробити на сейв ес.
-
-    //ВІДКРИТТЯ СЛОВНИКА З ФАЙЛУ        100%
-    //ЗАХИСТ "ВІД ДУРАКА".              100%
-    //ДОДАВАННЯ НОВОГО СЛОВА            100%
-    //ЗБЕРЕЖЕННЯ СЛОВНИКА               100%
-    //ВИДАЛЕННЯ СЛОВА                   100%
-
-
 
 }
