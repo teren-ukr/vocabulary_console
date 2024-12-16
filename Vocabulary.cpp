@@ -94,7 +94,7 @@ void Vocabulary::save(std::string file_name) {
     }
 
     if (!empty()) {
-        fs::path save = saveFolder / file_name;
+        fs::path save = vocabulariesFolder / file_name;
 
         std::ofstream outFile1(save);
         for (const Word_pair& pair: *this) {
@@ -112,8 +112,33 @@ void Vocabulary::save(std::string file_name) {
 
 
 //----------------------------------------------------------------------------------------------------------------------
+///Saved current vocabulary in save directory
+void Vocabulary::saveAs(fs::path &path, const std::string &file_name) {
+    if (file_name.empty()) {
+        std::cerr << "File name cannot be empty" << std::endl;
+        return;
+    }
+
+    if (!empty()) {
+        fs::path save = path / file_name;
+
+        std::ofstream outFile1(save);
+        for (const Word_pair& pair: *this) {
+            outFile1 << pair.word() << " - " << pair.translate() << std::endl;
+        }
+        outFile1.close();
+
+        std::cout << "Vocabulary saved successfully" << std::endl;
+    }
+    else {
+        std::cout<<"Vocabulary is empty."<<std::endl;
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
 ///Create new vocabulary in vocabulary directory
-void Vocabulary::createVocabulary(std::string name) {
+void Vocabulary::createVocabulary(std::string name) const {
     if (name.empty()) {
         std::cerr << "File name cannot be empty" << std::endl;
         return;
@@ -196,6 +221,8 @@ void Vocabulary::chose_vocabulary() {
     std::cout << "╬════╬════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
     std::cout << "║ No ╬ Vocabulary Name                                                                ║" << std::endl;
     std::cout << "╬════╬════════════════════════════════════════════════════════════════════════════════╬" << std::endl;
+    std::cout << "╬    ╬                                                                                ╬" << std::endl;
+
 
 
     for (int i = 0; i < vocabularies.size(); i++) {
@@ -209,7 +236,7 @@ void Vocabulary::chose_vocabulary() {
         //printf("║ %-*d ╬ %-*s ║\n", nmi(i), i, nms(vocabularies[i]), vocabularies[i].c_str());
         //std::cout << vocabularies[i]<<lengthUTF8(vocabularies[i]) << std::endl;
 
-        std::cout << "║ "<< i << prs(ad_to_id,' ') <<"╬ " <<vocabularies[i] <<prs(ad_to_vocub,' ') <<"║"<<std::endl;
+        std::cout << "║ "<< i+1 << prs(ad_to_id,' ') <<"╬ " <<vocabularies[i] <<prs(ad_to_vocub,' ') <<"║"<<std::endl;
     }
 
     std::cout << "╬════╬════════════════════════════════════════════════════════════════════════════════╬" << std::endl;

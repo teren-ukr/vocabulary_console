@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 #include <fstream>
+#include <windows.h>
 
 #include "functions.h"
 
@@ -44,11 +45,16 @@ public:
 
     void load(std::string file_name);
     void save(std::string file_name);
-    void createVocabulary(std::string name);
+    void saveAs(fs::path &path, const std::string &file_name);
+    void createVocabulary(std::string name) const;
 
 
     void add(Word_pair &pair);
     void delete_pair(size_t index);
+
+    void openFolder(const std::string& path) {
+        ShellExecute(NULL, "open", path.c_str(), NULL, NULL, SW_SHOWNORMAL);
+    }
 
 
 
